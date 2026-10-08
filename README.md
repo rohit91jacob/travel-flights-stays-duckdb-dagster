@@ -81,7 +81,7 @@ flowchart LR
 | DuckDB | 1.5.6 | warehouse (single file) |
 | pyarrow | 25.0.1 | CSV reading with stable row numbers |
 | kaggle | 2.2.4 | downloads (new-style `KGAT_` tokens) |
-| PostgreSQL + psycopg | 17 + 3.3.6 (Compose only) | Dagster run/event storage |
+| PostgreSQL | 17 (Compose only; SQLAlchemy pinned to 2.0.x for the psycopg2 driver) | Dagster run/event storage |
 | ruff 0.16.10, sqlfluff 4.4.0, pytest 9.1.1 | | quality gates |
 
 ## Data sources
