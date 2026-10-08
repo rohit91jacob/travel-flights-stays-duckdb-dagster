@@ -1,0 +1,9 @@
+# CI override: read the synthetic fixtures instead of calling Kaggle.
+services:
+  code-location:
+    environment:
+      TRAVEL_SOURCE_MODE: local
+      TRAVEL_LOCAL_SOURCE_DIR: /fixtures
+      TRAVEL_DUCKDB_MEMORY_LIMIT: 1GB
+    volumes:
+      - ./tests/fixtures/kaggle:/fixtures:ro

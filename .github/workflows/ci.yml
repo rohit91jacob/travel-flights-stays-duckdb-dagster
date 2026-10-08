@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_VERSION: "0.12.23"
+  PYTHON_VERSION: "3.12"
+  DBT_TARGET: ci
+  TRAVEL_SOURCE_MODE: local
+  TRAVEL_LOCAL_SOURCE_DIR: ${{ github.workspace }}/tests/fixtures/kaggle
+  TRAVEL_DUCKDB_MEMORY_LIMIT: 2GB
+
+jobs:
+  lint:
+    name: Lint (ruff, sqlfluff)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --frozen --all-groups
+      - run: uv run ruff check --output-format=github .
+      - run: uv run ruff format --check .
+      - run: uv run sqlfluff lint dbt/models dbt/tests dbt/macros --format github-annotation-native
+
+  unit:
+    name: Unit tests + Dagster definitions
+    runs-on: ubuntu-24.04
+    env:
+      DAGSTER_HOME: ${{ github.workspace }}/dagster_home
+      TRAVEL_DATA_DIR: ${{ runner.temp }}/travel-unit
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --frozen --all-groups
+      - name: Build the dbt manifest
+        run: make dbt-parse
+      - name: Load the Dagster definitions
+        run: uv run dagster definitions validate -m travel_pipeline.definitions
+      - name: Unit tests
+        run: uv run pytest -m "not e2e" --cov --cov-report=term --cov-report=xml
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage.xml
+
+  pipeline:
+    name: Pipeline on fixtures (Dagster jobs + dbt build)
+    runs-on: ubuntu-24.04
+    env:
+      DAGSTER_HOME: ${{ github.workspace }}/dagster_home
+      TRAVEL_DATA_DIR: ${{ runner.temp }}/travel-data
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --frozen --all-groups
+      - run: make dbt-parse
+      - name: Materialise every asset through Dagster (ingest -> loads -> transform)
+        run: make pipeline
+      - name: dbt build on the same warehouse
+        working-directory: dbt
+        env:
+          TRAVEL_DUCKDB_PATH: ${{ runner.temp }}/travel-data/warehouse/travel.duckdb
+        run: uv run dbt build --profiles-dir . --target ci
+      - name: End-to-end tests (all jobs, reruns, idempotency)
+        run: uv run pytest -m e2e
+      - name: dbt docs
+        working-directory: dbt
+        env:
+          TRAVEL_DUCKDB_PATH: ${{ runner.temp }}/travel-data/warehouse/travel.duckdb
+        run: uv run dbt docs generate --profiles-dir . --target ci
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dbt-docs
+          path: |
+            dbt/target/index.html
+            dbt/target/manifest.json
+            dbt/target/catalog.json
+
+  docker:
+    name: Docker image + Compose smoke test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - name: Build image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          tags: travel-pipeline:local
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Definitions load inside the image
+        run: docker run --rm travel-pipeline:local dagster definitions validate -m travel_pipeline.definitions
+      - name: Start the stack (fixtures mounted as the local source)
+        run: |
+          cp .env.example .env
+          sed -i 's/^DAGSTER_POSTGRES_PASSWORD=.*/DAGSTER_POSTGRES_PASSWORD=ci-only-password/' .env
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait --wait-timeout 300
+      - name: Launch runs through the deployed webserver and daemon
+        run: python3 scripts/compose_smoke_test.py --url http://localhost:3000
+      - name: Compose logs
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --no-color --tail 300
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v

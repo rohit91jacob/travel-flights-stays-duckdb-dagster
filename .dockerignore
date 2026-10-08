@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+**/__pycache__
+.pytest_cache
+.ruff_cache
+data
+dagster_home
+dbt/target
+dbt/logs
+dbt/dbt_packages
+tests
+docs
+scripts
+.env
+*.duckdb

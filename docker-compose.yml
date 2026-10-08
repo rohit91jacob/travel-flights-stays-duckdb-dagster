@@ -1,0 +1,88 @@
+# Dagster deployment: Postgres (instance storage) + code location (gRPC, runs execute here)
+# + webserver + daemon (schedules, sensors, run queue). Configure via .env (see .env.example).
+
+name: travel-pipeline
+
+x-dagster-instance-env: &dagster-instance-env
+  DAGSTER_POSTGRES_HOST: postgres
+  DAGSTER_POSTGRES_USER: ${DAGSTER_POSTGRES_USER:-dagster}
+  DAGSTER_POSTGRES_PASSWORD: ${DAGSTER_POSTGRES_PASSWORD:?set DAGSTER_POSTGRES_PASSWORD in .env}
+  DAGSTER_POSTGRES_DB: ${DAGSTER_POSTGRES_DB:-dagster}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${DAGSTER_POSTGRES_USER:-dagster}
+      POSTGRES_PASSWORD: ${DAGSTER_POSTGRES_PASSWORD:?set DAGSTER_POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${DAGSTER_POSTGRES_DB:-dagster}
+    volumes:
+      - dagster-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  code-location:
+    build: .
+    image: travel-pipeline:local
+    command: ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-m", "travel_pipeline.definitions"]
+    environment:
+      <<: *dagster-instance-env
+      KAGGLE_API_TOKEN: ${KAGGLE_API_TOKEN:-}
+      TRAVEL_SOURCE_MODE: ${TRAVEL_SOURCE_MODE:-kaggle}
+      TRAVEL_LOCAL_SOURCE_DIR: ${TRAVEL_LOCAL_SOURCE_DIR:-}
+      TRAVEL_DUCKDB_MEMORY_LIMIT: ${TRAVEL_DUCKDB_MEMORY_LIMIT:-2GB}
+      TRAVEL_DUCKDB_THREADS: ${TRAVEL_DUCKDB_THREADS:-4}
+      TRAVEL_ENFORCE_SOURCE_FRESHNESS: ${TRAVEL_ENFORCE_SOURCE_FRESHNESS:-true}
+      TRAVEL_FLIGHTS_REPLAY_START: ${TRAVEL_FLIGHTS_REPLAY_START:-}
+      TRAVEL_FLIGHTS_REPLAY_PARTITIONS_PER_DAY: ${TRAVEL_FLIGHTS_REPLAY_PARTITIONS_PER_DAY:-1}
+      TRAVEL_STAYS_REPLAY_START: ${TRAVEL_STAYS_REPLAY_START:-}
+      TRAVEL_STAYS_REPLAY_PARTITIONS_PER_DAY: ${TRAVEL_STAYS_REPLAY_PARTITIONS_PER_DAY:-7}
+      ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
+      DAGSTER_WEBSERVER_URL: ${DAGSTER_WEBSERVER_URL:-http://localhost:3000}
+    volumes:
+      - travel-data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "dagster", "api", "grpc-health-check", "-p", "4000"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+
+  webserver:
+    image: travel-pipeline:local
+    command: ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000", "-w", "/opt/dagster/home/workspace.yaml"]
+    environment:
+      <<: *dagster-instance-env
+    ports:
+      - "${DAGSTER_WEBSERVER_PORT:-3000}:3000"
+    depends_on:
+      code-location:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3000/server_info', timeout=5)"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+    restart: unless-stopped
+
+  daemon:
+    image: travel-pipeline:local
+    command: ["dagster-daemon", "run", "-w", "/opt/dagster/home/workspace.yaml"]
+    environment:
+      <<: *dagster-instance-env
+    depends_on:
+      code-location:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  travel-data:
+  dagster-postgres:

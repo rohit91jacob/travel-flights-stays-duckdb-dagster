@@ -1,0 +1,43 @@
+[sqlfluff]
+dialect = duckdb
+templater = jinja
+max_line_length = 120
+# The DuckDB dialect does not parse a few DuckDB-only constructs; keep the rest strict.
+exclude_rules = structure.column_order, ambiguous.column_count
+large_file_skip_byte_limit = 40000
+
+[sqlfluff:indentation]
+tab_space_size = 4
+indent_unit = space
+allow_implicit_indents = True
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = True
+load_macros_from_path = dbt/macros
+
+[sqlfluff:templater:jinja:context]
+target = {"schema": "main", "type": "duckdb", "name": "ci"}
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.types]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:aliasing.table]
+aliasing = explicit
+
+[sqlfluff:rules:aliasing.column]
+aliasing = explicit
+
+[sqlfluff:rules:ambiguous.column_references]
+group_by_and_order_by_style = explicit
