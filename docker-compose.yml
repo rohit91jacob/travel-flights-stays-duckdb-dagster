@@ -11,7 +11,7 @@ x-dagster-instance-env: &dagster-instance-env
 
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_USER: ${DAGSTER_POSTGRES_USER:-dagster}
       POSTGRES_PASSWORD: ${DAGSTER_POSTGRES_PASSWORD:?set DAGSTER_POSTGRES_PASSWORD in .env}
