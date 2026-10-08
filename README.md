@@ -171,7 +171,17 @@ uv run python -c "import duckdb; print(duckdb.connect('data/warehouse/travel.duc
   'select hotel_code, round(avg(is_canceled::int), 4) as cancellation_rate from marts.fct_hotel_bookings group by 1 order by 1'))"
 ```
 
-Results from the real data (verified locally through the Dagster daemon):
+```text
+┌────────────┬───────────────────┐
+│ hotel_code │ cancellation_rate │
+├────────────┼───────────────────┤
+│ H1         │            0.2776 │
+│ H2         │            0.4173 │
+└────────────┴───────────────────┘
+```
+
+Results from the real data, verified locally both with `make pipeline` and through
+`dagster dev`, where the daemon's sensor triggered the transform:
 
 | Check | Result |
 | --- | --- |

@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       DAGSTER_HOME: ${{ github.workspace }}/dagster_home
-      TRAVEL_DATA_DIR: ${{ runner.temp }}/travel-unit
+      TRAVEL_DATA_DIR: /tmp/travel-unit
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       DAGSTER_HOME: ${{ github.workspace }}/dagster_home
-      TRAVEL_DATA_DIR: ${{ runner.temp }}/travel-data
+      TRAVEL_DATA_DIR: /tmp/travel-data
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10
@@ -82,14 +82,14 @@ jobs:
       - name: dbt build on the same warehouse
         working-directory: dbt
         env:
-          TRAVEL_DUCKDB_PATH: ${{ runner.temp }}/travel-data/warehouse/travel.duckdb
+          TRAVEL_DUCKDB_PATH: /tmp/travel-data/warehouse/travel.duckdb
         run: uv run dbt build --profiles-dir . --target ci
       - name: End-to-end tests (all jobs, reruns, idempotency)
         run: uv run pytest -m e2e
       - name: dbt docs
         working-directory: dbt
         env:
-          TRAVEL_DUCKDB_PATH: ${{ runner.temp }}/travel-data/warehouse/travel.duckdb
+          TRAVEL_DUCKDB_PATH: /tmp/travel-data/warehouse/travel.duckdb
         run: uv run dbt docs generate --profiles-dir . --target ci
       - uses: actions/upload-artifact@v7
         with:
