@@ -1,0 +1,308 @@
+version: 2
+
+models:
+  - name: dim_airline
+    description: "Airlines seen in the scrape. Grain: one row per IATA carrier code."
+    columns:
+      - name: carrier_code
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: airline_name
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: fare_quotes
+        data_type: bigint
+      - name: flight_codes
+        data_type: bigint
+      - name: sells_business_class
+        data_type: boolean
+
+  - name: dim_route
+    description: "Directed city-to-city routes. Grain: one row per origin -> destination."
+    columns:
+      - name: origin_city
+        data_type: varchar
+      - name: origin_city_code
+        data_type: varchar
+      - name: destination_city
+        data_type: varchar
+      - name: destination_city_code
+        data_type: varchar
+      - name: route_code
+        data_type: varchar
+        description: "<origin IATA>-<destination IATA>, e.g. DEL-BOM."
+        data_tests: [unique, not_null]
+      - name: city_pair_code
+        data_type: varchar
+        description: Direction-agnostic pair (alphabetical), e.g. BOM-DEL for both directions.
+
+  - name: fct_flight_fare_quotes
+    description: >
+      Fare quotes. Grain: one itinerary option for one cabin class and departure date, as
+      listed on `observed_on`. Incremental (delete+insert by departure date).
+    data_tests:
+      - equal_row_count:
+          arguments:
+            compare_model: ref('stg_flights__fare_quotes')
+    columns:
+      - name: fare_quote_id
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: departure_date_key
+        data_type: integer
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: departure_date
+        data_type: date
+        data_tests: [not_null]
+      - name: observed_on
+        data_type: date
+      - name: days_to_departure
+        data_type: integer
+      - name: route_code
+        data_type: varchar
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_route')
+                field: route_code
+      - name: origin_city
+        data_type: varchar
+      - name: destination_city
+        data_type: varchar
+      - name: carrier_code
+        data_type: varchar
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_airline')
+                field: carrier_code
+      - name: airline_name
+        data_type: varchar
+      - name: flight_code
+        data_type: varchar
+        description: Code of the first leg (carrier-number); connections are not itemised upstream.
+      - name: cabin_class
+        data_type: varchar
+      - name: stops
+        data_type: integer
+      - name: stops_label
+        data_type: varchar
+      - name: via_point
+        data_type: varchar
+        description: Stopover published for some 1-stop itineraries (airport code or city name).
+      - name: departure_time
+        data_type: time
+      - name: arrival_time
+        data_type: time
+      - name: departure_time_band
+        data_type: varchar
+        description: late_night 00-04, early_morning 04-08, morning 08-12, afternoon 12-16, evening 16-20, night 20-24.
+      - name: duration_minutes
+        data_type: integer
+      - name: fare_inr
+        data_type: integer
+      - name: currency_code
+        data_type: varchar
+      - name: is_duration_malformed
+        data_type: boolean
+      - name: is_arrival_time_consistent
+        data_type: boolean
+      - name: dataset_version
+        data_type: varchar
+      - name: _loaded_at
+        data_type: timestamp
+
+  - name: mart_flight_fare_curve
+    description: >
+      Median fare by days to departure, per route and for all routes ('ALL'). Grain: route
+      x cabin class x days to departure. Because every quote was observed on 2022-02-10,
+      days to departure and departure date move together: read this as a cross-section of
+      departures, not a single flight getting dearer over time.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["route_code", "cabin_class", "days_to_departure"]
+    columns:
+      - name: route_code
+        data_type: varchar
+      - name: cabin_class
+        data_type: varchar
+      - name: days_to_departure
+        data_type: integer
+      - name: departure_date
+        data_type: date
+      - name: fare_quotes
+        data_type: bigint
+      - name: median_fare_inr
+        data_type: decimal(12,2)
+      - name: avg_fare_inr
+        data_type: decimal(12,2)
+      - name: p25_fare_inr
+        data_type: decimal(12,2)
+      - name: p75_fare_inr
+        data_type: decimal(12,2)
+      - name: min_fare_inr
+        data_type: integer
+      - name: median_fare_index_vs_furthest
+        data_type: decimal(8,3)
+        description: Median fare divided by the median at the furthest-out observed departure date.
+
+  - name: mart_flight_route_airline_fares
+    description: Fare distribution per route, airline and cabin class.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["route_code", "carrier_code", "cabin_class"]
+    columns:
+      - name: route_code
+        data_type: varchar
+      - name: origin_city
+        data_type: varchar
+      - name: destination_city
+        data_type: varchar
+      - name: carrier_code
+        data_type: varchar
+      - name: airline_name
+        data_type: varchar
+      - name: cabin_class
+        data_type: varchar
+      - name: fare_quotes
+        data_type: bigint
+      - name: departure_dates
+        data_type: bigint
+      - name: flight_codes
+        data_type: bigint
+      - name: median_fare_inr
+        data_type: decimal(12,2)
+      - name: avg_fare_inr
+        data_type: decimal(12,2)
+      - name: p25_fare_inr
+        data_type: decimal(12,2)
+      - name: p75_fare_inr
+        data_type: decimal(12,2)
+      - name: min_fare_inr
+        data_type: integer
+      - name: max_fare_inr
+        data_type: integer
+      - name: median_duration_minutes
+        data_type: decimal(8,1)
+      - name: nonstop_share
+        data_type: decimal(6,4)
+      - name: median_fare_rank_on_route
+        data_type: integer
+        description: 1 = cheapest airline (by median fare) on the route for that cabin class.
+
+  - name: mart_flight_class_premium
+    description: >
+      Business-class premium per route and airline (only airlines selling both classes).
+      `business_premium_ratio` compares class medians; `median_like_for_like_premium_ratio`
+      compares the same itinerary priced in both classes.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["route_code", "carrier_code"]
+    columns:
+      - name: route_code
+        data_type: varchar
+      - name: carrier_code
+        data_type: varchar
+      - name: airline_name
+        data_type: varchar
+      - name: economy_quotes
+        data_type: bigint
+      - name: business_quotes
+        data_type: bigint
+      - name: economy_median_fare_inr
+        data_type: decimal(12,2)
+      - name: business_median_fare_inr
+        data_type: decimal(12,2)
+      - name: business_premium_inr
+        data_type: decimal(12,2)
+      - name: business_premium_ratio
+        data_type: decimal(8,3)
+        data_tests:
+          - value_between:
+              arguments:
+                min_value: 1
+                max_value: 20
+      - name: matched_itineraries
+        data_type: bigint
+      - name: median_like_for_like_premium_ratio
+        data_type: decimal(8,3)
+
+  - name: mart_flight_stops_duration
+    description: Fares by number of stops and total journey duration band.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["cabin_class", "stops", "duration_band"]
+    columns:
+      - name: cabin_class
+        data_type: varchar
+      - name: stops
+        data_type: integer
+      - name: stops_label
+        data_type: varchar
+      - name: duration_band
+        data_type: varchar
+      - name: fare_quotes
+        data_type: bigint
+      - name: duration_band_order
+        data_type: integer
+      - name: median_fare_inr
+        data_type: decimal(12,2)
+      - name: avg_fare_inr
+        data_type: decimal(12,2)
+      - name: median_duration_minutes
+        data_type: decimal(8,1)
+
+  - name: mart_flight_departure_time
+    description: Fares by departure time band, indexed to the cabin class median.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["cabin_class", "departure_time_band"]
+    columns:
+      - name: cabin_class
+        data_type: varchar
+      - name: departure_time_band
+        data_type: varchar
+      - name: fare_quotes
+        data_type: bigint
+      - name: median_fare_inr
+        data_type: decimal(12,2)
+      - name: avg_fare_inr
+        data_type: decimal(12,2)
+      - name: median_fare_index_vs_class
+        data_type: decimal(8,3)
+      - name: band_order
+        data_type: integer
+
+unit_tests:
+  - name: class_premium_compares_medians_and_like_for_like
+    model: mart_flight_class_premium
+    given:
+      - input: ref('fct_flight_fare_quotes')
+        rows:
+          - {route_code: DEL-BOM, carrier_code: UK, airline_name: Vistara, cabin_class: Economy, fare_inr: 6000, departure_date: "2022-02-20", flight_code: UK-995, departure_time: "08:00:00", arrival_time: "10:10:00", duration_minutes: 130, stops: 0}
+          - {route_code: DEL-BOM, carrier_code: UK, airline_name: Vistara, cabin_class: Economy, fare_inr: 8000, departure_date: "2022-02-21", flight_code: UK-995, departure_time: "08:00:00", arrival_time: "10:10:00", duration_minutes: 130, stops: 0}
+          - {route_code: DEL-BOM, carrier_code: UK, airline_name: Vistara, cabin_class: Business, fare_inr: 30000, departure_date: "2022-02-20", flight_code: UK-995, departure_time: "08:00:00", arrival_time: "10:10:00", duration_minutes: 130, stops: 0}
+          - {route_code: DEL-BOM, carrier_code: UK, airline_name: Vistara, cabin_class: Business, fare_inr: 34000, departure_date: "2022-02-22", flight_code: UK-995, departure_time: "08:00:00", arrival_time: "10:10:00", duration_minutes: 130, stops: 0}
+          - {route_code: DEL-BOM, carrier_code: SG, airline_name: SpiceJet, cabin_class: Economy, fare_inr: 5000, departure_date: "2022-02-20", flight_code: SG-8709, departure_time: "18:55:00", arrival_time: "21:05:00", duration_minutes: 130, stops: 0}
+    expect:
+      rows:
+        - route_code: DEL-BOM
+          carrier_code: UK
+          economy_quotes: 2
+          business_quotes: 2
+          economy_median_fare_inr: 7000.00
+          business_median_fare_inr: 32000.00
+          business_premium_inr: 25000.00
+          business_premium_ratio: 4.571
+          matched_itineraries: 1
+          median_like_for_like_premium_ratio: 5.000

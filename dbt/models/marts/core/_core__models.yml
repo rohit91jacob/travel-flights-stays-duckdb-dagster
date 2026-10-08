@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: "Conformed calendar shared by both subject areas. Grain: one row per day."
+    columns:
+      - name: date_day
+        data_type: date
+        data_tests: [unique, not_null]
+      - name: date_key
+        data_type: integer
+        description: yyyymmdd surrogate used by the facts' *_date_key columns.
+        data_tests: [unique, not_null]
+      - name: year_number
+        data_type: integer
+      - name: quarter_number
+        data_type: integer
+      - name: month_number
+        data_type: integer
+      - name: month_name
+        data_type: varchar
+      - name: month_start
+        data_type: date
+      - name: iso_year
+        data_type: integer
+      - name: iso_week
+        data_type: integer
+      - name: iso_day_of_week
+        data_type: integer
+        description: 1 = Monday ... 7 = Sunday.
+      - name: day_name
+        data_type: varchar
+      - name: is_weekend
+        data_type: boolean
+
+  - name: dim_currency
+    description: "Conformed currency dimension. Grain: one row per ISO 4217 code used by a fact."
+    columns:
+      - name: currency_code
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: currency_name
+        data_type: varchar
+      - name: minor_unit
+        data_type: integer
+
+  - name: dim_city
+    description: "Conformed geography for flights and listings. Grain: one row per metro."
+    columns:
+      - name: city_name
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: city_code
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: primary_airport_iata
+        data_type: varchar
+      - name: state_name
+        data_type: varchar
+      - name: country_code
+        data_type: varchar
+      - name: currency_code
+        data_type: varchar
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_currency')
+                field: currency_code

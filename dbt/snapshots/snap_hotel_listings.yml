@@ -1,0 +1,24 @@
+version: 2
+
+snapshots:
+  - name: snap_hotel_listings
+    relation: ref('stg_stays__hotel_listings')
+    description: >
+      Type-2 history of listing attributes that change between captures (price, taxes,
+      rating, review count, star rating). Each new upstream version of the MakeMyTrip
+      dataset closes the changed rows and opens new ones; listings that disappear are
+      invalidated. With a single upstream version every listing has one open row.
+    config:
+      unique_key: listing_id
+      strategy: check
+      check_cols:
+        - nightly_price_inr
+        - taxes_and_fees_inr
+        - rating
+        - rating_description
+        - review_count
+        - star_rating
+      hard_deletes: invalidate
+    columns:
+      - name: listing_id
+        data_tests: [not_null]

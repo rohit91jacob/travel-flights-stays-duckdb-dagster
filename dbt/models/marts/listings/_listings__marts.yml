@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: dim_hotel_listing
+    description: >
+      Current version of each MakeMyTrip listing (open rows of `snap_hotel_listings`).
+      Grain: one row per hotel per city.
+    columns:
+      - name: listing_id
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: city
+        data_type: varchar
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_city')
+                field: city_name
+      - name: hotel_name
+        data_type: varchar
+      - name: star_rating
+        data_type: integer
+      - name: rating
+        data_type: decimal(3,1)
+        description: Guest rating out of 5.
+      - name: rating_description
+        data_type: varchar
+      - name: review_count
+        data_type: integer
+      - name: locality
+        data_type: varchar
+      - name: nearest_landmark
+        data_type: varchar
+      - name: distance_to_landmark_km
+        data_type: decimal(8,2)
+      - name: nightly_price_inr
+        data_type: integer
+      - name: taxes_and_fees_inr
+        data_type: integer
+      - name: total_nightly_price_inr
+        data_type: integer
+        description: Nightly price plus taxes and fees where the listing shows them.
+      - name: has_tax_breakdown
+        data_type: boolean
+      - name: captured_on
+        data_type: date
+      - name: dataset_version
+        data_type: varchar
+      - name: currency_code
+        data_type: varchar
+      - name: valid_from
+        data_type: timestamp
+
+  - name: mart_city_stay_prices
+    description: "Nightly price distribution of listings by city and star band ('all' = every listing). Grain: city x star band."
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["city", "star_band"]
+    columns:
+      - name: city
+        data_type: varchar
+      - name: star_band
+        data_type: varchar
+      - name: listings
+        data_type: bigint
+      - name: captured_on
+        data_type: date
+      - name: median_total_nightly_price_inr
+        data_type: decimal(12,2)
+      - name: p25_total_nightly_price_inr
+        data_type: decimal(12,2)
+      - name: p75_total_nightly_price_inr
+        data_type: decimal(12,2)
+      - name: avg_rating
+        data_type: decimal(4,2)
+      - name: median_review_count
+        data_type: decimal(10,1)

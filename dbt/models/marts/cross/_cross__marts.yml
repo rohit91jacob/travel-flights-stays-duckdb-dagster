@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: mart_city_trip_cost_benchmark
+    description: >
+      Indicative cost of flying into each metro and staying 3 nights at a mid-range (3-4
+      star) hotel. Grain: one row per city. Joins flights and listings on the conformed
+      city dimension only; the inputs were captured ~18 months apart (see
+      `fares_observed_on`, `listing_prices_captured_on`), so compare cities with each other
+      rather than reading the totals as prices.
+    columns:
+      - name: city
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: city_code
+        data_type: varchar
+      - name: inbound_quotes
+        data_type: bigint
+      - name: mid_range_listings
+        data_type: bigint
+      - name: fares_observed_on
+        data_type: date
+      - name: first_departure_date
+        data_type: date
+      - name: last_departure_date
+        data_type: date
+      - name: listing_prices_captured_on
+        data_type: date
+      - name: nights
+        data_type: integer
+      - name: median_inbound_economy_fare_inr
+        data_type: decimal(12,2)
+      - name: median_mid_range_nightly_price_inr
+        data_type: decimal(12,2)
+      - name: indicative_trip_cost_inr
+        data_type: decimal(12,2)
+      - name: days_between_captures
+        data_type: integer

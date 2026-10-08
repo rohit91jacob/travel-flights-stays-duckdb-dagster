@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: stg_stays__booking_events
+    description: >
+      Cleaned booking events. Grain: one event (`booking_created` or `status_changed`) per
+      booking. Data-quality quirks of the source are flagged, not dropped: 180 bookings have
+      no guests, 715 are zero-night stays, one has a negative ADR.
+    columns:
+      - name: booking_event_id
+        data_tests: [unique, not_null]
+      - name: booking_id
+        data_tests: [not_null]
+      - name: hotel_code
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('ref_hotels')
+                field: hotel_code
+      - name: event_date
+        data_tests: [not_null]
+      - name: arrival_date
+        data_tests: [not_null]
+      - name: lead_time_days
+        data_tests:
+          - not_null
+          - value_between:
+              arguments:
+                min_value: 0
+                max_value: 800
+      - name: meal_plan
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["BB", "HB", "FB", "SC"]
+      - name: adr_eur
+        description: Average daily rate in EUR (sum of lodging transactions / nights).
+        data_tests: [not_null]
+
+  - name: stg_stays__hotel_listings
+    description: >
+      MakeMyTrip listings. Grain: one hotel in one city as listed on the capture date.
+      `nightly_price_inr` is the displayed nightly price; `taxes_and_fees_inr` is only shown
+      for some listings.
+    columns:
+      - name: listing_id
+        data_tests: [unique, not_null]
+      - name: city
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('ref_cities')
+                field: city_name
+      - name: nightly_price_inr
+        data_tests:
+          - not_null
+          - is_positive
+      - name: star_rating
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false
+      - name: rating
+        data_tests:
+          - value_between:
+              arguments:
+                min_value: 0
+                max_value: 5
+
+unit_tests:
+  - name: parses_listing_prices_and_distances
+    model: stg_stays__hotel_listings
+    overrides:
+      vars:
+        hotel_listings_captured_on: "2023-08-19"
+    given:
+      - input: source('raw', 'hotel_listings')
+        rows:
+          - city: Mumbai
+            hotel_name: " The Orchid Hotel Mumbai Vile Parle"
+            location: "Near Mumbai Airport "
+            distance_to_landmark_raw: "930 m "
+            price_raw: "6,499"
+            tax_raw: "780"
+          - city: Delhi
+            hotel_name: "Country Inn and Suites by Radisson, Sahibabad"
+            location: "In Ghaziabad "
+            distance_to_landmark_raw: "30.0 km "
+            price_raw: "6,249"
+            tax_raw: null
+    expect:
+      rows:
+        - hotel_name: The Orchid Hotel Mumbai Vile Parle
+          locality: Near Mumbai Airport
+          distance_to_landmark_km: 0.93
+          nightly_price_inr: 6499
+          taxes_and_fees_inr: 780
+          total_nightly_price_inr: 7279
+          has_tax_breakdown: true
+        - hotel_name: Country Inn and Suites by Radisson, Sahibabad
+          locality: Ghaziabad
+          distance_to_landmark_km: 30.00
+          nightly_price_inr: 6249
+          taxes_and_fees_inr: null
+          total_nightly_price_inr: 6249
+          has_tax_breakdown: false

@@ -1,0 +1,46 @@
+name: travel
+version: "1.0.0"
+config-version: 2
+profile: travel
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: target
+clean-targets: ["target", "logs"]
+
+vars:
+  # Every flight quote was scraped on this day (days_left = departure_date - this date).
+  flights_observed_on: "2022-02-10"
+  # Publication date of the MakeMyTrip listings dataset (capture date of its prices).
+  hotel_listings_captured_on: "2023-08-19"
+  dim_date_start: "2013-01-01"
+  dim_date_end: "2023-12-31"
+
+models:
+  travel:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: table
+    marts:
+      +schema: marts
+      +materialized: table
+      +contract:
+        enforced: true
+
+seeds:
+  travel:
+    +schema: reference
+
+snapshots:
+  travel:
+    +schema: snapshots
+
+data_tests:
+  travel:
+    +store_failures: false

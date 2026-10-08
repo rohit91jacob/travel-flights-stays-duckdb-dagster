@@ -1,0 +1,7 @@
+city_name,city_code,primary_airport_iata,state_name,country_code,currency_code
+Bangalore,BLR,BLR,Karnataka,IN,INR
+Chennai,MAA,MAA,Tamil Nadu,IN,INR
+Delhi,DEL,DEL,Delhi,IN,INR
+Hyderabad,HYD,HYD,Telangana,IN,INR
+Kolkata,CCU,CCU,West Bengal,IN,INR
+Mumbai,BOM,BOM,Maharashtra,IN,INR

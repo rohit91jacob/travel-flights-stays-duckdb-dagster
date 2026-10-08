@@ -1,0 +1,53 @@
+with bookings as (
+    select * from {{ ref('int_stays__bookings') }}
+)
+
+select
+    booking_id,
+    hotel_code,
+    booking_date,
+    arrival_date,
+    checkout_date,
+    status_changed_on,
+    current_status,
+    is_outcome_known,
+    is_canceled,
+    lead_time_days,
+    nights,
+    weekend_nights,
+    week_nights,
+    adults,
+    children,
+    babies,
+    guests,
+    meal_plan,
+    country_code,
+    market_segment,
+    distribution_channel,
+    customer_type,
+    deposit_type,
+    reserved_room_type,
+    assigned_room_type,
+    is_room_reassigned,
+    is_repeated_guest,
+    previous_cancellations,
+    previous_bookings_not_canceled,
+    booking_changes,
+    days_in_waiting_list,
+    agent_id,
+    company_id,
+    required_car_parking_spaces,
+    total_of_special_requests,
+    'EUR' as currency_code,
+    has_no_guests,
+    is_zero_night_stay,
+    has_negative_adr,
+    as_of_date,
+    cast(strftime(booking_date, '%Y%m%d') as integer) as booking_date_key,
+    cast(strftime(arrival_date, '%Y%m%d') as integer) as arrival_date_key,
+    cast(adr_eur as decimal(10, 2)) as adr_eur,
+    cast(adr_eur * nights as decimal(12, 2)) as booked_room_revenue_eur,
+    cast(
+        case when current_status = 'Check-Out' then adr_eur * nights else 0 end as decimal(12, 2)
+    ) as realized_room_revenue_eur
+from bookings

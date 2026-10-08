@@ -1,0 +1,372 @@
+version: 2
+
+models:
+  - name: dim_hotel
+    description: "The two Portuguese properties of the booking demand dataset. Grain: one row per hotel."
+    columns:
+      - name: hotel_code
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: hotel_name
+        data_type: varchar
+      - name: hotel_type
+        data_type: varchar
+      - name: region_name
+        data_type: varchar
+      - name: country_code
+        data_type: varchar
+      - name: currency_code
+        data_type: varchar
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_currency')
+                field: currency_code
+
+  - name: fct_hotel_bookings
+    description: >
+      Bookings with their status as of `as_of_date` (the latest replayed event date).
+      Grain: one row per booking. Money is in EUR. `realized_room_revenue_eur` counts
+      completed stays only; `booked_room_revenue_eur` is ADR x nights regardless of outcome.
+    data_tests:
+      - equal_row_count:
+          arguments:
+            compare_model: ref('stg_stays__booking_events')
+            compare_filter: "event_type = 'booking_created'"
+    columns:
+      - name: booking_id
+        data_type: varchar
+        description: "HB + 6-digit row number in the source file (the source has no booking id)."
+        data_tests: [unique, not_null]
+      - name: hotel_code
+        data_type: varchar
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_hotel')
+                field: hotel_code
+      - name: booking_date
+        data_type: date
+        description: Arrival date minus lead time.
+      - name: arrival_date
+        data_type: date
+      - name: checkout_date
+        data_type: date
+      - name: status_changed_on
+        data_type: date
+        description: Reservation status date (cancellation, check-out or no-show date); null until replayed.
+      - name: current_status
+        data_type: varchar
+      - name: is_outcome_known
+        data_type: boolean
+      - name: is_canceled
+        data_type: boolean
+        description: Canceled or No-Show (the source's is_canceled definition); null while unknown.
+      - name: lead_time_days
+        data_type: integer
+      - name: nights
+        data_type: integer
+      - name: weekend_nights
+        data_type: integer
+      - name: week_nights
+        data_type: integer
+      - name: adults
+        data_type: integer
+      - name: children
+        data_type: integer
+      - name: babies
+        data_type: integer
+      - name: guests
+        data_type: integer
+      - name: meal_plan
+        data_type: varchar
+      - name: country_code
+        data_type: varchar
+        description: ISO 3166-1 alpha-3 country of origin as recorded at check-in (null for 488 bookings).
+      - name: market_segment
+        data_type: varchar
+      - name: distribution_channel
+        data_type: varchar
+      - name: customer_type
+        data_type: varchar
+      - name: deposit_type
+        data_type: varchar
+      - name: reserved_room_type
+        data_type: varchar
+      - name: assigned_room_type
+        data_type: varchar
+      - name: is_room_reassigned
+        data_type: boolean
+      - name: is_repeated_guest
+        data_type: boolean
+      - name: previous_cancellations
+        data_type: integer
+      - name: previous_bookings_not_canceled
+        data_type: integer
+      - name: booking_changes
+        data_type: integer
+      - name: days_in_waiting_list
+        data_type: integer
+      - name: agent_id
+        data_type: varchar
+      - name: company_id
+        data_type: varchar
+      - name: required_car_parking_spaces
+        data_type: integer
+      - name: total_of_special_requests
+        data_type: integer
+      - name: currency_code
+        data_type: varchar
+      - name: has_no_guests
+        data_type: boolean
+      - name: is_zero_night_stay
+        data_type: boolean
+      - name: has_negative_adr
+        data_type: boolean
+      - name: as_of_date
+        data_type: date
+      - name: booking_date_key
+        data_type: integer
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: arrival_date_key
+        data_type: integer
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: adr_eur
+        data_type: decimal(10,2)
+      - name: booked_room_revenue_eur
+        data_type: decimal(12,2)
+      - name: realized_room_revenue_eur
+        data_type: decimal(12,2)
+
+  - name: dim_hotel_booking_status_history
+    description: >
+      Type-2 status history per booking, derived from the event log (valid_from inclusive,
+      valid_to exclusive, null while current). Grain: one row per booking status version.
+    columns:
+      - name: booking_status_version_id
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: booking_id
+        data_type: varchar
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_hotel_bookings')
+                field: booking_id
+      - name: hotel_code
+        data_type: varchar
+      - name: status
+        data_type: varchar
+      - name: valid_from
+        data_type: date
+      - name: valid_to
+        data_type: date
+      - name: is_current
+        data_type: boolean
+      - name: version_number
+        data_type: integer
+
+  - name: mart_stays_booking_pace
+    description: >
+      On-the-books curve per hotel and arrival month at fixed days before arrival.
+      Grain: hotel x arrival month x days before arrival.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["hotel_code", "arrival_month", "days_before_arrival"]
+    columns:
+      - name: hotel_code
+        data_type: varchar
+      - name: arrival_month
+        data_type: date
+      - name: final_arrivals
+        data_type: bigint
+        description: Bookings for the month that ended in Check-Out.
+      - name: all_outcomes_known
+        data_type: boolean
+      - name: days_before_arrival
+        data_type: integer
+      - name: gross_bookings
+        data_type: bigint
+        description: Bookings created at least this many days before their arrival.
+      - name: cancelled_by_then
+        data_type: bigint
+      - name: net_bookings
+        data_type: bigint
+      - name: share_of_final_arrivals
+        data_type: decimal(8,4)
+
+  - name: mart_stays_cancellation_drivers
+    description: >
+      Cancellation rate by candidate driver and value, per hotel and overall ('ALL').
+      Grain: hotel x driver x driver value. Bookings with a known outcome only.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["hotel_code", "driver", "driver_value"]
+    columns:
+      - name: hotel_code
+        data_type: varchar
+      - name: driver
+        data_type: varchar
+      - name: driver_value
+        data_type: varchar
+      - name: bookings
+        data_type: bigint
+      - name: cancellations
+        data_type: bigint
+      - name: cancellation_rate
+        data_type: decimal(6,4)
+        data_tests:
+          - value_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: share_of_bookings
+        data_type: decimal(6,4)
+      - name: lift_vs_hotel_rate
+        data_type: decimal(8,3)
+
+  - name: mart_stays_adr_los
+    description: >
+      ADR and length of stay of completed stays. Grain: hotel x reserved room type x LOS band.
+      `adr_eur` is room-night weighted (revenue / room nights).
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["hotel_code", "reserved_room_type", "los_band"]
+    columns:
+      - name: hotel_code
+        data_type: varchar
+      - name: reserved_room_type
+        data_type: varchar
+      - name: los_band
+        data_type: varchar
+      - name: stays
+        data_type: bigint
+      - name: room_nights
+        data_type: bigint
+      - name: los_band_order
+        data_type: integer
+      - name: adr_eur
+        data_type: decimal(10,2)
+      - name: median_booking_adr_eur
+        data_type: decimal(10,2)
+      - name: avg_length_of_stay
+        data_type: decimal(8,2)
+      - name: median_length_of_stay
+        data_type: decimal(8,1)
+
+  - name: mart_stays_segment_channel_mix
+    description: "Booking mix, cancellation rate and realized ADR by market segment and channel. Grain: hotel x arrival year x segment x channel."
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["hotel_code", "arrival_year", "market_segment", "distribution_channel"]
+    columns:
+      - name: hotel_code
+        data_type: varchar
+      - name: arrival_year
+        data_type: integer
+      - name: market_segment
+        data_type: varchar
+      - name: distribution_channel
+        data_type: varchar
+      - name: bookings
+        data_type: bigint
+      - name: cancellations
+        data_type: bigint
+      - name: share_of_hotel_year_bookings
+        data_type: decimal(6,4)
+      - name: cancellation_rate
+        data_type: decimal(6,4)
+      - name: avg_lead_time_days
+        data_type: decimal(8,1)
+      - name: realized_room_revenue_eur
+        data_type: decimal(14,2)
+      - name: realized_adr_eur
+        data_type: decimal(10,2)
+
+  - name: mart_stays_seasonality
+    description: "Bookings, cancellations, room nights and ADR by arrival month. Grain: hotel x arrival month."
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["hotel_code", "arrival_month"]
+    columns:
+      - name: hotel_code
+        data_type: varchar
+      - name: arrival_month
+        data_type: date
+      - name: bookings
+        data_type: bigint
+      - name: cancellations
+        data_type: bigint
+      - name: completed_stays
+        data_type: bigint
+      - name: arrival_year
+        data_type: integer
+      - name: arrival_month_number
+        data_type: integer
+      - name: cancellation_rate
+        data_type: decimal(6,4)
+      - name: room_nights
+        data_type: bigint
+      - name: realized_room_revenue_eur
+        data_type: decimal(14,2)
+      - name: realized_adr_eur
+        data_type: decimal(10,2)
+      - name: avg_lead_time_days
+        data_type: decimal(8,1)
+
+  - name: mart_stays_revenue_proxies
+    description: >
+      Monthly room-nights, revenue and ADR from completed stays, plus occupancy and RevPAR
+      proxies. True occupancy/RevPAR need room inventory, which the dataset does not
+      publish; the proxies assume capacity = the peak rooms ever occupied on one night
+      (a lower bound), so they overstate true occupancy and RevPAR.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["hotel_code", "stay_month"]
+    columns:
+      - name: hotel_code
+        data_type: varchar
+      - name: stay_month
+        data_type: date
+      - name: room_nights_sold
+        data_type: bigint
+      - name: peak_occupied_rooms
+        data_type: bigint
+        description: Most rooms occupied on any single night at the hotel across the whole dataset.
+      - name: max_occupied_rooms
+        data_type: bigint
+        description: Most rooms occupied on any single night within the month.
+      - name: days_in_month
+        data_type: integer
+      - name: is_complete_month
+        data_type: boolean
+        description: False for months at the edges of the data window, where stays are only partly covered.
+      - name: room_revenue_eur
+        data_type: decimal(14,2)
+      - name: adr_eur
+        data_type: decimal(10,2)
+      - name: avg_occupied_rooms
+        data_type: decimal(10,2)
+      - name: occupancy_proxy
+        data_type: decimal(6,4)
+        data_tests:
+          - value_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: revpar_proxy_eur
+        data_type: decimal(10,2)

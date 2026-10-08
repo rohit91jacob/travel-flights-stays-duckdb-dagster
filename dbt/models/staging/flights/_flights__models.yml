@@ -1,0 +1,134 @@
+version: 2
+
+models:
+  - name: stg_flights__fare_quotes
+    description: >
+      Parsed fare quotes. Grain: one itinerary option for one cabin class and departure
+      date, as listed on the observation date. Exact duplicate rows exist upstream (the
+      same option listed twice) and are kept; `fare_quote_id` is derived from the source
+      file and row number.
+    columns:
+      - name: fare_quote_id
+        data_tests: [unique, not_null]
+      - name: departure_date
+        data_tests: [not_null]
+      - name: days_to_departure
+        description: Days between the observation date and departure (the dataset's `days_left`).
+        data_tests:
+          - not_null
+          - value_between:
+              arguments:
+                min_value: 1
+                max_value: 49
+      - name: fare_inr
+        data_tests:
+          - not_null
+          - is_positive
+      - name: stops
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1, 2]
+                quote: false
+      - name: departure_time
+        data_tests: [not_null]
+      - name: arrival_time
+        data_tests: [not_null]
+      - name: duration_minutes
+        description: Null when the scrape published an unparseable duration (e.g. '1.03h m').
+        data_tests:
+          - not_null_proportion:
+              arguments:
+                at_least: 0.99
+      - name: is_arrival_time_consistent
+        description: Departure + duration lands on the published arrival time (HH:MM).
+        data_tests:
+          - not_null_proportion:
+              arguments:
+                at_least: 0.99
+
+unit_tests:
+  - name: parses_prices_durations_and_stops
+    description: Commas in prices, 'NNh MMm' durations, multi-line stop text and the malformed durations seen upstream.
+    model: stg_flights__fare_quotes
+    overrides:
+      vars:
+        flights_observed_on: "2022-02-10"
+    given:
+      - input: source('raw', 'flight_fare_quotes')
+        rows:
+          - departure_date: "2022-02-12"
+            cabin_class: Economy
+            airline: "SpiceJet"
+            carrier_code: "SG"
+            flight_number: "8709"
+            source_city: Delhi
+            destination_city: Mumbai
+            dep_time_raw: "18:55"
+            arr_time_raw: "21:05"
+            time_taken_raw: "02h 10m"
+            stop_raw: "non-stop "
+            price_raw: "5,953"
+            source_file: economy.csv
+            source_row_number: 1
+          - departure_date: "2022-03-31"
+            cabin_class: Business
+            airline: "Air India"
+            carrier_code: "AI"
+            flight_number: "531"
+            source_city: Delhi
+            destination_city: Mumbai
+            dep_time_raw: "20:00"
+            arr_time_raw: "20:45"
+            time_taken_raw: "24h 45m"
+            stop_raw: "1-stop\n\t\t\t\tVia IXU\n\t\t"
+            price_raw: "42,220"
+            source_file: business.csv
+            source_row_number: 3
+          - departure_date: "2022-02-11"
+            cabin_class: Economy
+            airline: "Indigo"
+            carrier_code: "6E"
+            flight_number: "2046"
+            source_city: Kolkata
+            destination_city: Chennai
+            dep_time_raw: "05:40"
+            arr_time_raw: "08:00"
+            time_taken_raw: "1.03h m"
+            stop_raw: "2+-stop"
+            price_raw: "12,100"
+            source_file: economy.csv
+            source_row_number: 9
+    expect:
+      rows:
+        - fare_inr: 5953
+          duration_minutes: 130
+          stops: 0
+          stops_label: non-stop
+          via_point: null
+          days_to_departure: 2
+          flight_code: SG-8709
+          departure_time_band: evening
+          is_duration_malformed: false
+          is_arrival_time_consistent: true
+        - fare_inr: 42220
+          duration_minutes: 1485
+          stops: 1
+          stops_label: 1 stop
+          via_point: IXU
+          days_to_departure: 49
+          flight_code: AI-531
+          departure_time_band: night
+          is_duration_malformed: false
+          is_arrival_time_consistent: true
+        - fare_inr: 12100
+          duration_minutes: null
+          stops: 2
+          stops_label: 2+ stops
+          via_point: null
+          days_to_departure: 1
+          flight_code: 6E-2046
+          departure_time_band: early_morning
+          is_duration_malformed: true
+          is_arrival_time_consistent: null

@@ -1,0 +1,54 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Typed copies of the landed Kaggle files, written by the Dagster raw assets.
+    schema: raw
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: { count: 26, period: hour }
+        error_after: { count: 50, period: hour }
+    tables:
+      - name: flight_fare_quotes
+        description: >
+          EaseMyTrip fare quotes (economy.csv + business.csv), one row per itinerary option
+          and cabin class, partitioned by departure date.
+        columns:
+          - name: departure_date
+            data_tests: [not_null]
+          - name: cabin_class
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ["Economy", "Business"]
+          - name: source_row_number
+            data_tests: [not_null]
+
+      - name: hotel_booking_events
+        description: >
+          Two events per booking of the hotel booking demand dataset (`booking_created`,
+          `status_changed`), partitioned by event date.
+        columns:
+          - name: booking_id
+            data_tests: [not_null]
+          - name: event_type
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ["booking_created", "status_changed"]
+          - name: event_status
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ["Booked", "Canceled", "Check-Out", "No-Show"]
+
+      - name: hotel_listings
+        description: MakeMyTrip hotel listings for six Indian metros (point-in-time snapshot).
+        config:
+          freshness: null
+        columns:
+          - name: hotel_name
+            data_tests: [not_null]
+          - name: city
+            data_tests: [not_null]

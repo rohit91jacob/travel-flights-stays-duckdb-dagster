@@ -1,0 +1,111 @@
+version: 2
+
+models:
+  - name: int_stays__bookings
+    description: >
+      One row per booking as of the latest replayed event date (`as_of_date`).
+      `current_status` is 'Booked' until the booking's status event has been replayed;
+      `is_canceled` is null while the outcome is unknown.
+    columns:
+      - name: booking_id
+        data_tests: [unique, not_null]
+      - name: current_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["Booked", "Canceled", "Check-Out", "No-Show"]
+
+  - name: int_stays__booking_status_history
+    description: Type-2 status history per booking (valid_from inclusive, valid_to exclusive).
+    columns:
+      - name: booking_status_version_id
+        data_tests: [unique, not_null]
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["Booked", "Canceled", "Check-Out", "No-Show"]
+
+  - name: int_stays__occupied_room_nights
+    description: One row per occupied room-night of completed stays; revenue is the booking's ADR.
+    columns:
+      - name: stay_night
+        data_tests: [not_null]
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: ["booking_id", "stay_night"]
+
+unit_tests:
+  - name: status_history_is_type_2
+    description: A cancelled booking has a closed 'Booked' version and an open 'Canceled' version.
+    model: int_stays__booking_status_history
+    given:
+      - input: ref('stg_stays__booking_events')
+        rows:
+          - booking_id: HB000001
+            hotel_code: H1
+            event_status: Booked
+            event_date: "2016-01-10"
+            event_sequence: 1
+          - booking_id: HB000001
+            hotel_code: H1
+            event_status: Canceled
+            event_date: "2016-02-01"
+            event_sequence: 2
+          - booking_id: HB000002
+            hotel_code: H2
+            event_status: Booked
+            event_date: "2016-01-15"
+            event_sequence: 1
+    expect:
+      rows:
+        - booking_id: HB000001
+          status: Booked
+          valid_from: "2016-01-10"
+          valid_to: "2016-02-01"
+          version_number: 1
+          is_current: false
+        - booking_id: HB000001
+          status: Canceled
+          valid_from: "2016-02-01"
+          valid_to: null
+          version_number: 2
+          is_current: true
+        - booking_id: HB000002
+          status: Booked
+          valid_from: "2016-01-15"
+          valid_to: null
+          version_number: 1
+          is_current: true
+
+  - name: bookings_hide_unreplayed_outcomes
+    description: A booking whose status event has not been replayed is 'Booked' with an unknown outcome.
+    model: int_stays__bookings
+    given:
+      - input: ref('stg_stays__booking_events')
+        rows:
+          - booking_id: HB000001
+            event_type: booking_created
+            event_status: Booked
+            event_date: "2016-01-10"
+          - booking_id: HB000001
+            event_type: status_changed
+            event_status: No-Show
+            event_date: "2016-02-01"
+          - booking_id: HB000002
+            event_type: booking_created
+            event_status: Booked
+            event_date: "2016-02-03"
+    expect:
+      rows:
+        - booking_id: HB000001
+          current_status: No-Show
+          is_outcome_known: true
+          is_canceled: true
+          as_of_date: "2016-02-03"
+        - booking_id: HB000002
+          current_status: Booked
+          is_outcome_known: false
+          is_canceled: null
+          as_of_date: "2016-02-03"

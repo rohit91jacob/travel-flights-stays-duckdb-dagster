@@ -1,0 +1,50 @@
+version: 2
+
+seeds:
+  - name: ref_cities
+    description: >
+      The six Indian metros covered by both the flight scrape and the MakeMyTrip listings.
+      This is the conformed geography that lets the two subject areas meet.
+    config:
+      column_types:
+        city_name: varchar
+        city_code: varchar
+        primary_airport_iata: varchar
+        state_name: varchar
+        country_code: varchar
+        currency_code: varchar
+    columns:
+      - name: city_name
+        data_tests: [unique, not_null]
+      - name: city_code
+        description: IATA metropolitan / airport code.
+        data_tests: [unique, not_null]
+
+  - name: ref_currencies
+    description: ISO 4217 currencies used by the facts (fares and listings in INR, hotel ADR in EUR).
+    config:
+      column_types:
+        currency_code: varchar
+        currency_name: varchar
+        minor_unit: integer
+    columns:
+      - name: currency_code
+        data_tests: [unique, not_null]
+
+  - name: ref_hotels
+    description: >
+      The two properties in the hotel booking demand dataset. Locations are from the source
+      paper (Antonio et al., 2019): H1 is a resort hotel in the Algarve, H2 a city hotel in Lisbon.
+    config:
+      column_types:
+        hotel_code: varchar
+        hotel_name: varchar
+        hotel_type: varchar
+        region_name: varchar
+        country_code: varchar
+        currency_code: varchar
+    columns:
+      - name: hotel_code
+        data_tests: [unique, not_null]
+      - name: hotel_name
+        data_tests: [unique, not_null]
