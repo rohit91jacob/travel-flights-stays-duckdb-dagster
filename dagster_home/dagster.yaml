@@ -1,0 +1,26 @@
+# Dagster instance for local development (`make dev`, `make pipeline`).
+# Storage defaults to SQLite files inside $DAGSTER_HOME; everything else mirrors
+# docker/dagster.yaml so concurrency behaves the same locally and in Compose.
+
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+
+concurrency:
+  pools:
+    default_limit: 1
+    granularity: op
+  runs:
+    max_concurrent_runs: 4
+    tag_concurrency_limits:
+      - key: travel/warehouse
+        value: duckdb
+        limit: 1
+
+run_retries:
+  enabled: true
+  max_retries: 2
+  retry_on_asset_or_op_failure: false
+
+telemetry:
+  enabled: false
