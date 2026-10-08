@@ -1,0 +1,80 @@
+[project]
+name = "travel-pipeline"
+version = "0.1.0"
+description = "Production-grade flights + stays analytics pipeline on DuckDB, dbt and Dagster."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "rohit91jacob" }]
+dependencies = [
+    "dagster==1.13.25",
+    "dagster-dbt==0.29.25",
+    "dagster-postgres==0.29.25",
+    "dbt-core>=1.11,<1.13",
+    "dbt-duckdb==1.11.0",
+    "duckdb==1.5.6",
+    "kaggle==2.2.4",
+    "pyarrow>=21",
+    "requests>=2.32",
+]
+
+[project.optional-dependencies]
+webserver = ["dagster-webserver==1.13.25"]
+
+[dependency-groups]
+dev = [
+    "dagster-webserver==1.13.25",
+    "pre-commit>=4",
+    "pytest>=9",
+    "pytest-cov>=7",
+    "ruff>=0.16",
+    "sqlfluff>=4.4",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/travel_pipeline"]
+
+[tool.dagster]
+module_name = "travel_pipeline.definitions"
+code_location_name = "travel_pipeline"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests", "scripts"]
+extend-exclude = ["dbt/target", "dbt/dbt_packages", "dbt/logs"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "C4", "RUF", "PTH", "N", "S", "T20", "PL", "TRY"]
+ignore = [
+    "PLR0913", # dagster asset signatures legitimately take many params
+    "PLR2004", # magic values are fine in tests/data rules
+    "TRY003",  # long exception messages are useful context here
+    "S608",    # SQL is built from validated identifiers only (see loaders.py)
+    "E501",    # ruff format owns line length; long strings/SQL are left intact
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "PLR2004", "S603", "S607"]
+"scripts/**" = ["T201", "S311", "S310"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "e2e: end-to-end runs that materialise the whole asset graph on fixtures",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:dbt.*",
+    "ignore::dagster.BetaWarning",
+    "ignore::dagster.PreviewWarning",
+]
+
+[tool.coverage.run]
+source = ["travel_pipeline"]
+branch = true

@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Data and runtime state (never committed)
+data/
+*.duckdb
+*.duckdb.wal
+dagster_home/*
+!dagster_home/dagster.yaml
+.tmp_dagster_home_*/
+logs/
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+
+# Secrets and local config
+.env
+.kaggle/
+kaggle.json
+access_token
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
