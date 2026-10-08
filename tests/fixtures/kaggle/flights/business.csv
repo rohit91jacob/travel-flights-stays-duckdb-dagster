@@ -1,0 +1,77 @@
+date,airline,ch_code,num_code,dep_time,from,time_taken,stop,arr_time,to,price
+11-02-2022,Vistara,UK,8655,22:35,Delhi,18h 32m,2+-stop,17:07,Mumbai,"39,631"
+11-02-2022,Vistara,UK,3406,02:45,Delhi,07h 43m,2+-stop,10:28,Mumbai,"33,899"
+11-02-2022,Air India,AI,2871,23:10,Delhi,24h 30m,1-stop ,23:40,Mumbai,"32,476"
+11-02-2022,Air India,AI,6548,09:10,Delhi,22h 07m,"1-stop
+						Via IXU
+				",07:17,Mumbai,"23,053"
+11-02-2022,Vistara,UK,7366,01:55,Mumbai,23h 21m,1-stop ,01:16,Delhi,"49,537"
+11-02-2022,Vistara,UK,8377,23:05,Mumbai,11h 52m,"1-stop
+						Via IXU
+				",10:57,Delhi,"21,052"
+11-02-2022,Air India,AI,7382,22:00,Mumbai,16h 53m,2+-stop,14:53,Delhi,"40,546"
+11-02-2022,Air India,AI,9447,03:50,Mumbai,03h 08m,non-stop ,06:58,Delhi,"40,269"
+11-02-2022,Vistara,UK,1435,01:40,Bangalore,10h 46m,1-stop ,12:26,Kolkata,"22,308"
+11-02-2022,Vistara,UK,6084,03:30,Bangalore,19h 26m,"1-stop
+						Via IXU
+				",22:56,Kolkata,"47,382"
+11-02-2022,Air India,AI,312,23:10,Bangalore,03h 03m,non-stop ,02:13,Kolkata,"32,250"
+11-02-2022,Air India,AI,2905,12:15,Bangalore,05h 08m,"1-stop
+						Via IXU
+				",17:23,Kolkata,"47,428"
+11-02-2022,Vistara,UK,6910,10:00,Chennai,24h 39m,2+-stop,10:39,Hyderabad,"29,994"
+11-02-2022,Vistara,UK,1197,16:45,Chennai,22h 31m,"1-stop
+						Via IXU
+				",15:16,Hyderabad,"46,855"
+11-02-2022,Air India,AI,6483,14:25,Chennai,06h 55m,1-stop ,21:20,Hyderabad,"41,733"
+11-02-2022,Air India,AI,2043,02:30,Chennai,11h 04m,2+-stop,13:34,Hyderabad,"35,111"
+12-02-2022,Vistara,UK,4572,04:20,Delhi,10h 43m,2+-stop,15:03,Mumbai,"38,983"
+12-02-2022,Vistara,UK,2845,12:15,Delhi,18h 55m,2+-stop,07:10,Mumbai,"31,134"
+12-02-2022,Air India,AI,4916,17:10,Delhi,02h 36m,non-stop ,19:46,Mumbai,"32,264"
+12-02-2022,Air India,AI,7726,21:35,Delhi,08h 54m,"1-stop
+						Via IXU
+				",06:29,Mumbai,"40,112"
+12-02-2022,Vistara,UK,2009,08:30,Mumbai,02h 04m,non-stop ,10:34,Delhi,"34,799"
+12-02-2022,Vistara,UK,7694,17:55,Mumbai,19h 20m,"1-stop
+						Via IXU
+				",13:15,Delhi,"24,363"
+12-02-2022,Air India,AI,1448,09:00,Mumbai,02h 40m,non-stop ,11:40,Delhi,"37,168"
+12-02-2022,Air India,AI,5124,09:05,Mumbai,21h 36m,"1-stop
+						Via IXU
+				",06:41,Delhi,"45,560"
+12-02-2022,Vistara,UK,9908,18:55,Bangalore,16h 43m,1-stop ,11:38,Kolkata,"39,384"
+12-02-2022,Vistara,UK,3588,13:25,Bangalore,17h 39m,2+-stop,07:04,Kolkata,"23,597"
+12-02-2022,Air India,AI,6349,04:00,Bangalore,09h 42m,1-stop ,13:42,Kolkata,"21,794"
+12-02-2022,Air India,AI,588,22:00,Bangalore,13h 10m,"1-stop
+						Via IXU
+				",11:10,Kolkata,"35,138"
+12-02-2022,Vistara,UK,6178,04:55,Chennai,11h 16m,1-stop ,16:11,Hyderabad,"23,151"
+12-02-2022,Vistara,UK,2462,08:50,Chennai,03h 00m,non-stop ,11:50,Hyderabad,"36,720"
+12-02-2022,Air India,AI,5742,14:40,Chennai,02h 25m,non-stop ,17:05,Hyderabad,"32,130"
+12-02-2022,Air India,AI,5532,18:05,Chennai,03h 08m,non-stop ,21:13,Hyderabad,"22,169"
+13-02-2022,Vistara,UK,8411,07:40,Delhi,17h 33m,2+-stop,01:13,Mumbai,"22,116"
+13-02-2022,Vistara,UK,3714,03:50,Delhi,23h 04m,"1-stop
+						Via IXU
+				",02:54,Mumbai,"42,425"
+13-02-2022,Air India,AI,4629,20:15,Delhi,18h 16m,2+-stop,14:31,Mumbai,"24,755"
+13-02-2022,Air India,AI,4327,05:50,Delhi,09h 13m,"1-stop
+						Via IXU
+				",15:03,Mumbai,"42,390"
+13-02-2022,Vistara,UK,6978,22:30,Mumbai,12h 06m,2+-stop,10:36,Delhi,"44,171"
+13-02-2022,Vistara,UK,264,00:55,Mumbai,20h 56m,2+-stop,21:51,Delhi,"50,236"
+13-02-2022,Air India,AI,8088,19:40,Mumbai,02h 02m,non-stop ,21:42,Delhi,"33,772"
+13-02-2022,Air India,AI,1352,02:05,Mumbai,09h 49m,"1-stop
+						Via IXU
+				",11:54,Delhi,"26,420"
+13-02-2022,Vistara,UK,4393,13:45,Bangalore,02h 53m,non-stop ,16:38,Kolkata,"50,605"
+13-02-2022,Vistara,UK,1202,09:40,Bangalore,06h 35m,"1-stop
+						Via IXU
+				",16:15,Kolkata,"42,249"
+13-02-2022,Air India,AI,8450,13:00,Bangalore,20h 01m,1-stop ,09:01,Kolkata,"23,449"
+13-02-2022,Air India,AI,8556,22:30,Bangalore,03h 17m,non-stop ,01:47,Kolkata,"23,952"
+13-02-2022,Vistara,UK,7986,05:10,Chennai,07h 12m,1-stop ,12:22,Hyderabad,"29,335"
+13-02-2022,Vistara,UK,3473,03:10,Chennai,22h 54m,"1-stop
+						Via IXU
+				",02:04,Hyderabad,"47,256"
+13-02-2022,Air India,AI,4611,06:05,Chennai,21h 57m,1-stop ,04:02,Hyderabad,"43,015"
+13-02-2022,Air India,AI,2318,04:55,Chennai,02h 30m,non-stop ,07:25,Hyderabad,"49,607"

@@ -1,0 +1,177 @@
+date,airline,ch_code,num_code,dep_time,from,time_taken,stop,arr_time,to,price
+11-02-2022,Vistara,UK,3406,01:15,Delhi,16h 24m,2+-stop,17:39,Mumbai,"4,684"
+11-02-2022,Vistara,UK,7455,00:00,Delhi,18h 04m,2+-stop,18:04,Mumbai,"5,487"
+11-02-2022,Air India,AI,7558,16:55,Delhi,02h 49m,non-stop ,19:44,Mumbai,"6,700"
+11-02-2022,Air India,AI,6117,01:45,Delhi,12h 23m,"1-stop
+						Via IXU
+				",14:08,Mumbai,"5,254"
+11-02-2022,Indigo,6E,4620,01:55,Delhi,19h 32m,1-stop ,21:27,Mumbai,"5,695"
+11-02-2022,Indigo,6E,5138,00:25,Delhi,1.03h m,"1-stop
+						Via IXU
+				",11:39,Mumbai,"5,302"
+11-02-2022,SpiceJet,SG,1735,22:40,Delhi,14h 37m,1-stop ,13:17,Mumbai,"7,040"
+11-02-2022,SpiceJet,SG,4767,01:45,Delhi,02h 03m,non-stop ,03:48,Mumbai,"4,165"
+11-02-2022,GO FIRST,G8,640,01:45,Delhi,02h 54m,non-stop ,04:39,Mumbai,"4,947"
+11-02-2022,GO FIRST,G8,4597,13:30,Delhi,07h 02m,"1-stop
+						Via IXU
+				",20:32,Mumbai,"6,923"
+11-02-2022,Vistara,UK,8538,09:10,Mumbai,13h 54m,1-stop ,23:04,Delhi,"5,228"
+11-02-2022,Vistara,UK,612,00:10,Mumbai,20h 19m,2+-stop,20:29,Delhi,"7,091"
+11-02-2022,Air India,AI,2043,19:00,Mumbai,22h 43m,1-stop ,17:43,Delhi,"4,814"
+11-02-2022,Air India,AI,5667,13:10,Mumbai,02h 10m,non-stop ,15:20,Delhi,"6,452"
+11-02-2022,Indigo,6E,3377,07:10,Mumbai,03h 11m,non-stop ,10:21,Delhi,"7,746"
+11-02-2022,Indigo,6E,3668,23:20,Mumbai,16h 00m,2+-stop,15:20,Delhi,"3,963"
+11-02-2022,SpiceJet,SG,634,05:30,Mumbai,10h 57m,1-stop ,16:27,Delhi,"4,227"
+11-02-2022,SpiceJet,SG,4953,03:50,Mumbai,20h 04m,2+-stop,23:54,Delhi,"4,873"
+11-02-2022,GO FIRST,G8,9578,12:25,Mumbai,02h 56m,non-stop ,15:21,Delhi,"7,321"
+11-02-2022,GO FIRST,G8,3873,15:40,Mumbai,03h 04m,non-stop ,18:44,Delhi,"5,053"
+11-02-2022,Vistara,UK,1662,05:45,Bangalore,02h 09m,non-stop ,07:54,Kolkata,"5,123"
+11-02-2022,Vistara,UK,3536,07:35,Bangalore,05h 11m,2+-stop,12:46,Kolkata,"6,376"
+11-02-2022,Air India,AI,9829,02:25,Bangalore,24h 14m,1-stop ,02:39,Kolkata,"4,167"
+11-02-2022,Air India,AI,2119,23:00,Bangalore,22h 59m,2+-stop,21:59,Kolkata,"4,558"
+11-02-2022,Indigo,6E,7977,08:25,Bangalore,02h 00m,non-stop ,10:25,Kolkata,"6,303"
+11-02-2022,Indigo,6E,3517,14:30,Bangalore,23h 29m,"1-stop
+						Via IXU
+				",13:59,Kolkata,"6,631"
+11-02-2022,SpiceJet,SG,7976,10:45,Bangalore,23h 49m,2+-stop,10:34,Kolkata,"6,677"
+11-02-2022,SpiceJet,SG,1617,13:25,Bangalore,08h 15m,"1-stop
+						Via IXU
+				",21:40,Kolkata,"5,828"
+11-02-2022,GO FIRST,G8,8722,17:40,Bangalore,03h 11m,non-stop ,20:51,Kolkata,"6,251"
+11-02-2022,GO FIRST,G8,2742,23:30,Bangalore,18h 31m,"1-stop
+						Via IXU
+				",18:01,Kolkata,"4,618"
+11-02-2022,Vistara,UK,4774,16:20,Chennai,12h 22m,1-stop ,04:42,Hyderabad,"7,276"
+11-02-2022,Vistara,UK,1644,23:40,Chennai,19h 26m,"1-stop
+						Via IXU
+				",19:06,Hyderabad,"3,592"
+11-02-2022,Air India,AI,9786,02:00,Chennai,18h 48m,1-stop ,20:48,Hyderabad,"5,697"
+11-02-2022,Air India,AI,9386,21:00,Chennai,12h 03m,"1-stop
+						Via IXU
+				",09:03,Hyderabad,"5,444"
+11-02-2022,Indigo,6E,5065,17:55,Chennai,17h 45m,1-stop ,11:40,Hyderabad,"4,374"
+11-02-2022,Indigo,6E,8532,18:30,Chennai,14h 34m,2+-stop,09:04,Hyderabad,"8,015"
+11-02-2022,SpiceJet,SG,3461,11:50,Chennai,02h 06m,non-stop ,13:56,Hyderabad,"7,511"
+11-02-2022,SpiceJet,SG,5324,11:25,Chennai,21h 37m,"1-stop
+						Via IXU
+				",09:02,Hyderabad,"7,753"
+11-02-2022,GO FIRST,G8,4435,00:05,Chennai,20h 26m,1-stop ,20:31,Hyderabad,"7,289"
+11-02-2022,GO FIRST,G8,7572,19:55,Chennai,19h 07m,"1-stop
+						Via IXU
+				",15:02,Hyderabad,"6,397"
+12-02-2022,Vistara,UK,7314,10:20,Delhi,24h 44m,1-stop ,11:04,Mumbai,"5,543"
+12-02-2022,Vistara,UK,8221,03:40,Delhi,20h 02m,"1-stop
+						Via IXU
+				",23:42,Mumbai,"5,380"
+12-02-2022,Air India,AI,797,07:35,Delhi,16h 17m,2+-stop,23:52,Mumbai,"6,334"
+12-02-2022,Air India,AI,2961,10:55,Delhi,03h 13m,non-stop ,14:08,Mumbai,"3,352"
+12-02-2022,Indigo,6E,637,19:40,Delhi,19h 43m,2+-stop,15:23,Mumbai,"7,015"
+12-02-2022,Indigo,6E,1590,17:00,Delhi,16h 35m,"1-stop
+						Via IXU
+				",09:35,Mumbai,"6,038"
+12-02-2022,SpiceJet,SG,3666,12:30,Delhi,10h 37m,1-stop ,23:07,Mumbai,"7,324"
+12-02-2022,SpiceJet,SG,3641,05:25,Delhi,12h 34m,"1-stop
+						Via IXU
+				",17:59,Mumbai,"6,143"
+12-02-2022,GO FIRST,G8,1366,19:35,Delhi,15h 07m,2+-stop,10:42,Mumbai,"4,946"
+12-02-2022,GO FIRST,G8,3775,22:25,Delhi,15h 40m,2+-stop,14:05,Mumbai,"7,439"
+12-02-2022,Vistara,UK,5509,03:25,Mumbai,15h 56m,1-stop ,19:21,Delhi,"3,594"
+12-02-2022,Vistara,UK,327,12:25,Mumbai,18h 45m,"1-stop
+						Via IXU
+				",07:10,Delhi,"3,554"
+12-02-2022,Air India,AI,9560,14:00,Mumbai,08h 50m,1-stop ,22:50,Delhi,"6,603"
+12-02-2022,Air India,AI,3104,12:30,Mumbai,02h 33m,non-stop ,15:03,Delhi,"3,505"
+12-02-2022,Indigo,6E,2153,14:10,Mumbai,11h 37m,1-stop ,01:47,Delhi,"4,253"
+12-02-2022,Indigo,6E,940,20:25,Mumbai,22h 08m,2+-stop,18:33,Delhi,"6,573"
+12-02-2022,SpiceJet,SG,1251,07:50,Mumbai,06h 02m,2+-stop,13:52,Delhi,"6,263"
+12-02-2022,SpiceJet,SG,1441,12:30,Mumbai,18h 10m,"1-stop
+						Via IXU
+				",06:40,Delhi,"3,734"
+12-02-2022,GO FIRST,G8,2289,14:40,Mumbai,02h 34m,non-stop ,17:14,Delhi,"4,619"
+12-02-2022,GO FIRST,G8,8844,09:15,Mumbai,05h 11m,2+-stop,14:26,Delhi,"3,600"
+12-02-2022,Vistara,UK,4447,16:35,Bangalore,13h 17m,2+-stop,05:52,Kolkata,"5,600"
+12-02-2022,Vistara,UK,3505,15:55,Bangalore,22h 59m,"1-stop
+						Via IXU
+				",14:54,Kolkata,"6,764"
+12-02-2022,Air India,AI,3253,05:05,Bangalore,24h 28m,1-stop ,05:33,Kolkata,"4,088"
+12-02-2022,Air India,AI,137,19:25,Bangalore,20h 15m,"1-stop
+						Via IXU
+				",15:40,Kolkata,"5,464"
+12-02-2022,Indigo,6E,647,13:40,Bangalore,11h 26m,1-stop ,01:06,Kolkata,"7,937"
+12-02-2022,Indigo,6E,2202,11:15,Bangalore,03h 11m,non-stop ,14:26,Kolkata,"6,703"
+12-02-2022,SpiceJet,SG,5574,17:25,Bangalore,02h 01m,non-stop ,19:26,Kolkata,"4,951"
+12-02-2022,SpiceJet,SG,2313,14:45,Bangalore,02h 21m,non-stop ,17:06,Kolkata,"4,187"
+12-02-2022,GO FIRST,G8,8552,03:55,Bangalore,08h 32m,1-stop ,12:27,Kolkata,"3,747"
+12-02-2022,GO FIRST,G8,6016,00:00,Bangalore,22h 17m,"1-stop
+						Via IXU
+				",22:17,Kolkata,"7,041"
+12-02-2022,Vistara,UK,2177,14:55,Chennai,14h 57m,2+-stop,05:52,Hyderabad,"8,200"
+12-02-2022,Vistara,UK,3863,11:25,Chennai,02h 39m,non-stop ,14:04,Hyderabad,"7,684"
+12-02-2022,Air India,AI,1386,14:55,Chennai,03h 07m,non-stop ,18:02,Hyderabad,"3,728"
+12-02-2022,Air India,AI,3249,16:20,Chennai,05h 11m,"1-stop
+						Via IXU
+				",21:31,Hyderabad,"8,039"
+12-02-2022,Indigo,6E,8132,00:30,Chennai,09h 36m,2+-stop,10:06,Hyderabad,"6,213"
+12-02-2022,Indigo,6E,421,21:50,Chennai,02h 43m,non-stop ,00:33,Hyderabad,"4,384"
+12-02-2022,SpiceJet,SG,6670,07:55,Chennai,02h 08m,non-stop ,10:03,Hyderabad,"6,375"
+12-02-2022,SpiceJet,SG,3379,19:50,Chennai,10h 12m,"1-stop
+						Via IXU
+				",06:02,Hyderabad,"8,240"
+12-02-2022,GO FIRST,G8,1858,02:45,Chennai,05h 41m,2+-stop,08:26,Hyderabad,"4,265"
+12-02-2022,GO FIRST,G8,4960,21:45,Chennai,02h 49m,non-stop ,00:34,Hyderabad,"7,227"
+13-02-2022,Vistara,UK,238,09:55,Delhi,22h 36m,1-stop ,08:31,Mumbai,"4,854"
+13-02-2022,Vistara,UK,7394,20:30,Delhi,23h 50m,"1-stop
+						Via IXU
+				",20:20,Mumbai,"5,594"
+13-02-2022,Air India,AI,3464,01:00,Delhi,15h 28m,2+-stop,16:28,Mumbai,"5,965"
+13-02-2022,Air India,AI,1118,12:20,Delhi,24h 00m,2+-stop,12:20,Mumbai,"4,624"
+13-02-2022,Indigo,6E,7638,12:50,Delhi,15h 45m,2+-stop,04:35,Mumbai,"6,242"
+13-02-2022,Indigo,6E,5717,04:10,Delhi,07h 32m,"1-stop
+						Via IXU
+				",11:42,Mumbai,"6,637"
+13-02-2022,SpiceJet,SG,7204,12:20,Delhi,21h 26m,2+-stop,09:46,Mumbai,"3,939"
+13-02-2022,SpiceJet,SG,4442,07:05,Delhi,19h 43m,2+-stop,02:48,Mumbai,"5,463"
+13-02-2022,GO FIRST,G8,8093,20:40,Delhi,09h 35m,1-stop ,06:15,Mumbai,"7,590"
+13-02-2022,GO FIRST,G8,4310,20:20,Delhi,24h 08m,"1-stop
+						Via IXU
+				",20:28,Mumbai,"5,534"
+13-02-2022,Vistara,UK,641,14:35,Mumbai,17h 30m,1-stop ,08:05,Delhi,"6,974"
+13-02-2022,Vistara,UK,9799,18:45,Mumbai,19h 49m,2+-stop,14:34,Delhi,"4,395"
+13-02-2022,Air India,AI,9272,04:05,Mumbai,11h 11m,2+-stop,15:16,Delhi,"6,509"
+13-02-2022,Air India,AI,2131,20:15,Mumbai,16h 52m,2+-stop,13:07,Delhi,"7,572"
+13-02-2022,Indigo,6E,6502,07:05,Mumbai,11h 52m,2+-stop,18:57,Delhi,"3,719"
+13-02-2022,Indigo,6E,7222,00:35,Mumbai,12h 46m,2+-stop,13:21,Delhi,"4,763"
+13-02-2022,SpiceJet,SG,5796,18:45,Mumbai,15h 49m,1-stop ,10:34,Delhi,"5,862"
+13-02-2022,SpiceJet,SG,1537,00:50,Mumbai,05h 39m,2+-stop,06:29,Delhi,"4,189"
+13-02-2022,GO FIRST,G8,1770,21:15,Mumbai,15h 41m,2+-stop,12:56,Delhi,"6,814"
+13-02-2022,GO FIRST,G8,1242,12:25,Mumbai,18h 13m,"1-stop
+						Via IXU
+				",06:38,Delhi,"4,724"
+13-02-2022,Vistara,UK,772,08:55,Bangalore,02h 39m,non-stop ,11:34,Kolkata,"3,771"
+13-02-2022,Vistara,UK,2674,17:15,Bangalore,03h 14m,non-stop ,20:29,Kolkata,"6,605"
+13-02-2022,Air India,AI,1977,13:55,Bangalore,23h 42m,2+-stop,13:37,Kolkata,"6,029"
+13-02-2022,Air India,AI,7458,02:00,Bangalore,02h 35m,non-stop ,04:35,Kolkata,"4,482"
+13-02-2022,Indigo,6E,5166,11:55,Bangalore,03h 16m,non-stop ,15:11,Kolkata,"7,891"
+13-02-2022,Indigo,6E,4269,12:40,Bangalore,15h 19m,2+-stop,03:59,Kolkata,"5,992"
+13-02-2022,SpiceJet,SG,6992,15:40,Bangalore,14h 35m,1-stop ,06:15,Kolkata,"3,790"
+13-02-2022,SpiceJet,SG,2018,21:45,Bangalore,14h 39m,"1-stop
+						Via IXU
+				",12:24,Kolkata,"5,167"
+13-02-2022,GO FIRST,G8,8880,14:20,Bangalore,02h 36m,non-stop ,16:56,Kolkata,"5,969"
+13-02-2022,GO FIRST,G8,1094,19:15,Bangalore,02h 51m,non-stop ,22:06,Kolkata,"3,492"
+13-02-2022,Vistara,UK,6867,05:10,Chennai,20h 46m,2+-stop,01:56,Hyderabad,"5,027"
+13-02-2022,Vistara,UK,7685,09:25,Chennai,07h 40m,"1-stop
+						Via IXU
+				",17:05,Hyderabad,"6,125"
+13-02-2022,Air India,AI,9160,00:30,Chennai,21h 56m,2+-stop,22:26,Hyderabad,"5,717"
+13-02-2022,Air India,AI,401,00:15,Chennai,08h 56m,"1-stop
+						Via IXU
+				",09:11,Hyderabad,"3,907"
+13-02-2022,Indigo,6E,5670,21:50,Chennai,09h 59m,1-stop ,07:49,Hyderabad,"7,603"
+13-02-2022,Indigo,6E,9251,04:40,Chennai,11h 02m,2+-stop,15:42,Hyderabad,"7,863"
+13-02-2022,SpiceJet,SG,851,18:35,Chennai,02h 41m,non-stop ,21:16,Hyderabad,"3,527"
+13-02-2022,SpiceJet,SG,2282,20:20,Chennai,08h 14m,2+-stop,04:34,Hyderabad,"7,234"
+13-02-2022,GO FIRST,G8,4740,19:50,Chennai,24h 01m,2+-stop,19:51,Hyderabad,"4,425"
+13-02-2022,GO FIRST,G8,2935,01:40,Chennai,06h 19m,"1-stop
+						Via IXU
+				",07:59,Hyderabad,"4,742"
