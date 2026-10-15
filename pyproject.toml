@@ -13,7 +13,7 @@ dependencies = [
     "dagster-postgres==0.29.25",
     # SQLAlchemy 2.1 resolves postgresql:// to psycopg 3, whose server-side parameter binding
     # breaks Dagster's Postgres storage; 2.0.x keeps the psycopg2 driver dagster-postgres ships.
-    "sqlalchemy>=2.0,<2.1",
+    "sqlalchemy>=2.0,<2.2",
     "dbt-core>=1.11,<1.13",
     "dbt-duckdb==1.11.0",
     "duckdb==1.5.6",
