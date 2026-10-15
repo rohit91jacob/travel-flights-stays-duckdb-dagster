@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 # One image for all three Dagster processes (code location, webserver, daemon).
 
-FROM python:3.12-slim-bookworm AS runtime
+FROM python:3.14-slim-bookworm AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
