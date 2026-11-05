@@ -15,7 +15,7 @@ dependencies = [
     # breaks Dagster's Postgres storage; 2.0.x keeps the psycopg2 driver dagster-postgres ships.
     "sqlalchemy>=2.0,<2.1",
     "dbt-core>=1.11,<1.13",
-    "dbt-duckdb==1.11.0",
+    "dbt-duckdb==1.11.1",
     "duckdb==1.5.6",
     "kaggle==2.2.4",
     "pyarrow>=21",
